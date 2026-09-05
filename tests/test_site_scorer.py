@@ -1,40 +1,32 @@
-from src.phase1_ml.site_scorer import score_location
+# test_site_scorer.py
+# Run with: python -m pytest tests/ -v
 
-PUNE_LATITUDE = 18.500419
-PUNE_LONGITUDE = 73.765995
+import sys
+import os
 
-def test_score_location_returns_dictionary():
-    result = score_location(PUNE_LATITUDE, PUNE_LONGITUDE)
+# Add src/phase1_ml to path so we can import site_scorer
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src', 'phase1_ml'))
 
-    assert isinstance(result, dict)
+from site_scorer import score_location
 
-def test_score_location_has_required_keys():
-    result = score_location(PUNE_LATITUDE, PUNE_LONGITUDE)
+def test_score_returns_dict():
+    result = score_location(13.0827, 80.2707)  # Chennai
+    assert isinstance(result, dict), "score_location should return a dict"
 
+def test_score_has_required_keys():
+    result = score_location(13.0827, 80.2707)
     required_keys = [
-        "input_latitude",
-        "input_longitude",
-        "nearest_location_id",
-        "nearest_latitude",
-        "nearest_longitude",
-        "zone_name",
-        "opportunity_score",
-        "risk_score",
-        "probability_good_site",
-        "features",
-        "verdict",
+        'latitude', 'longitude', 'opportunity_score',
+        'risk_score', 'features', 'shap_explanation', 'verdict'
     ]
-
     for key in required_keys:
-        assert key in result
+        assert key in result, f"Missing key: {key}"
 
-def test_scores_are_between_zero_and_ten():
-    result = score_location(PUNE_LATITUDE, PUNE_LONGITUDE)
-
-    assert 0 <= result["opportunity_score"] <= 10
-    assert 0 <= result["risk_score"] <= 10
+def test_scores_in_valid_range():
+    result = score_location(13.0827, 80.2707)
+    assert 0 <= result['opportunity_score'] <= 10, "opportunity_score must be 0-10"
+    assert 0 <= result['risk_score'] <= 10, "risk_score must be 0-10"
 
 def test_verdict_is_valid():
-    result = score_location(PUNE_LATITUDE, PUNE_LONGITUDE)
-
-    assert result["verdict"] in ["GOOD SITE", "POOR SITE"]
+    result = score_location(13.0827, 80.2707)
+    assert result['verdict'] in ['GOOD SITE', 'POOR SITE'], "verdict must be GOOD SITE or POOR SITE"
