@@ -3,3 +3,25 @@ __pycache__/
 *.pyc
 .vscode/
 .ipynb_checkpoints/
+
+# Python cache and test cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Jupyter automatic backups
+.ipynb_checkpoints/
+
+# Secret configuration
+.env
+
+# Large raw spatial data
+data/raw/
+data/shapefiles/
+
+# Reproducible trained models
+models/*.pkl
+
+# Temporary ArcGIS/QGIS files
+*.lock
+*.tmp
