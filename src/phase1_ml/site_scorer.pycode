@@ -1,0 +1,95 @@
+# site_scorer.py
+import joblib
+import pandas as pd
+import numpy as np
+import os
+import shap
+
+# Feature columns (must match training data)
+FEATURE_COLS = [
+    'dist_road_m', 'dist_hospital_m', 'dist_market_m', 'dist_traffic_m',
+    'building_count_500m', 'poi_count_500m', 'commercial_poi_count_500m',
+    'population_2011', 'elevation_m', 'slope_deg', 'flood_risk_encoded'
+]
+
+MODEL_PATH = os.path.join('models', 'saved', 'site_scorer_model.pkl')
+
+def _compute_features(latitude, longitude):
+    """
+    Placeholder: compute 7+ features for given lat/lon.
+    In practice, this would query OSM, population rasters, flood maps, etc.
+    For testing, return dummy values in realistic ranges.
+    """
+    # Dummy feature computation (replace with real logic later)
+    features = {
+        'dist_road_m': np.random.uniform(50, 500),
+        'dist_hospital_m': np.random.uniform(200, 2000),
+        'dist_market_m': np.random.uniform(100, 1500),
+        'dist_traffic_m': np.random.uniform(100, 1000),
+        'building_count_500m': np.random.randint(10, 200),
+        'poi_count_500m': np.random.randint(5, 100),
+        'commercial_poi_count_500m': np.random.randint(1, 50),
+        'population_2011': np.random.uniform(1000, 50000),
+        'elevation_m': np.random.uniform(10, 500),
+        'slope_deg': np.random.uniform(0, 30),
+        'flood_risk_encoded': np.random.randint(0, 3),
+    }
+    return pd.DataFrame([features])[FEATURE_COLS]
+
+def score_location(latitude, longitude):
+    """
+    Score a location for EV charging site suitability.
+    
+    Returns dict with:
+    - latitude, longitude
+    - opportunity_score (0-10)
+    - risk_score (0-10)
+    - features (dict of computed features)
+    - shap_explanation (dict)
+    - verdict: 'GOOD SITE' or 'POOR SITE'
+    """
+    # Load model
+    model = joblib.load(MODEL_PATH)
+    
+    # Compute features
+    X = _compute_features(latitude, longitude)
+    
+    # Predict probability of "good site" (class 1)
+    prob_good = model.predict_proba(X)[0][1]
+    
+    # Convert to 0-10 scale
+    opportunity_score = round(prob_good * 10, 1)
+    risk_score = round((1 - prob_good) * 10, 1)
+    
+    # SHAP explanation
+    explainer = shap.TreeExplainer(model)
+    shap_vals = explainer.shap_values(X)
+    
+    # Get feature names and SHAP values for class 1
+    if isinstance(shap_vals, list):
+        shap_class1 = shap_vals[1][0]  # XGBoost returns list
+    else:
+        shap_class1 = shap_vals[0]
+    
+    shap_dict = {feat: round(val, 3) for feat, val in zip(FEATURE_COLS, shap_class1)}
+    
+    # Determine verdict
+    verdict = 'GOOD SITE' if prob_good >= 0.5 else 'POOR SITE'
+    
+    # Build result
+    result = {
+        'latitude': latitude,
+        'longitude': longitude,
+        'opportunity_score': opportunity_score,
+        'risk_score': risk_score,
+        'features': X.iloc[0].to_dict(),
+        'shap_explanation': shap_dict,
+        'verdict': verdict,
+    }
+    
+    return result
+
+if __name__ == '__main__':
+    # Test
+    test_result = score_location(13.0827, 80.2707)
+    print(test_result)
