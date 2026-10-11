@@ -8,7 +8,7 @@
 
 \- Project Title: GIS-Based Site Suitability Analysis for Public EV Charging Stations
 
-\- Final Study Area: Pune Municipal Corporation – 41 Wards
+\- Final Study Area: Pune Municipal Corporation – 15 Zone-wise Boundary
 
 \- State: Maharashtra, India
 
@@ -44,7 +44,7 @@
 
 |---|---|---|---|---|---|---|---|
 
-| Pune PMC 41 Ward Boundary | Boundary polygons for Pune Municipal Corporation’s 41 wards | Defines the final study area for EV charging-station suitability analysis | Public GIS / PMC ward-boundary source | 31-08-2026 | Shapefile (.shp) | `data/raw/boundaries/pune\_pmc\_41\_wards/` | Loaded and visually verified in QGIS |
+| Pune PMC 41 Ward Boundary | Boundary polygons for Pune Municipal Corporation’s 15 Zone-wise Boundary | Defines the final study area for EV charging-station suitability analysis | Public GIS / PMC ward-boundary source | 31-08-2026 | Shapefile (.shp) | `data/raw/boundaries/pune\_pmc\_41\_wards/` | Loaded and visually verified in QGIS |
 
 | OpenStreetMap Full Extract | Roads, buildings, POIs, traffic, traffic signals, land use, water bodies, waterways, railways, places, natural features, transport, power features, and other OSM layers | Provides road accessibility, demand locations, building density, parking context, water-body buffers, land-use suitability, traffic proxy indicators, and power-infrastructure context | Geofabrik OpenStreetMap | 31-08-2026 | ZIP archive and Shapefile (.shp) | ZIP: `data/raw/osm\_download\_zip/`; extracted layers: `data/shapefiles/osm/` | Loaded and visually verified in QGIS |
 

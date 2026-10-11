@@ -25,3 +25,15 @@ models/*.pkl
 # Temporary ArcGIS/QGIS files
 *.lock
 *.tmp
+
+# GeoSense Phase 3 - LiDAR and street imagery
+data/lidar/
+data/streetview/images/
+data/streetview/results/
+models/saved/
+outputs/point_clouds/
+outputs/reports/
+*.laz
+*.las
+*.ply
+*.pth
