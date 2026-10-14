@@ -1,0 +1,6 @@
+class_id,land_cover_class,pixels_2018,percent_2018,pixels_2025,percent_2025,pixel_change,change_pct_points
+0,Urban,117178,6.29,311631,16.73,194453,10.44
+1,Vegetation,734806,39.44,301148,16.16,-433658,-23.28
+2,Water,19013,1.02,20181,1.08,1168,0.06
+3,Bare Land,88991,4.78,159004,8.53,70013,3.76
+4,Agriculture,903177,48.48,1071201,57.49,168024,9.02

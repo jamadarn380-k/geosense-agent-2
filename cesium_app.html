@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <style>
+        html, body, #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #lcPanel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 999;
+            background: rgba(255,255,255,0.9);
+            padding: 8px;
+            border-radius: 8px;
+            font-family: sans-serif;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+    <div id="lcPanel">
+        <b>Land Cover:</b>
+        <button id="b2023">2023</button>
+        <button id="b2025">2025</button>
+        <button id="bOff">Off</button>
+    </div>
+
+    <script>
+        Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImxZTlFUWEZESU92Y0QwNFUiLCJqdGkiOiI0ZmNkNTMyNi0wNDc4LTRiZTUtOTc0Mi04Yzc0MjdkNDcyZjEiLCJpZCI6NTIyMDEwLCJpc3MiOiJodHRwczovL2FwaS5jZXNpdW0uY29tIiwiYXVkIjoidW5kZWZpbmVkX2RlZmF1bHQiLCJpYXQiOjE3OTE4MzMxMzR9.o993mz7muOUg1xoFPuxTrrTAAQhGSXlZIDwsJZXUNlM";
+
+        const params = new URLSearchParams(window.location.search);
+        const lat = parseFloat(params.get("lat")) || 18.5204;
+        const lon = parseFloat(params.get("lon")) || 73.8567;
+
+        const esriProvider = new Cesium.UrlTemplateImageryProvider({
+            url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            credit: "Esri, Maxar, Earthstar Geographics"
+        });
+
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+            animation: false,
+            timeline: false,
+            baseLayerPicker: false,
+            geocoder: false,
+            homeButton: false,
+            sceneModePicker: false,
+            navigationHelpButton: false,
+            fullscreenButton: false,
+            infoBox: false,
+            selectionIndicator: false,
+            baseLayer: new Cesium.ImageryLayer(esriProvider)
+        });
+
+        Cesium.GeoJsonDataSource.load("http://localhost:8000/sites.geojson")
+            .then(function(dataSource) {
+                viewer.dataSources.add(dataSource);
+
+                const entities = dataSource.entities.values;
+                for (let i = 0; i < entities.length; i++) {
+                    const entity = entities[i];
+                    const label = entity.properties.label.getValue();
+
+                    entity.point = new Cesium.PointGraphics({
+                        pixelSize: label === 1 ? 10 : 7,
+                        color: label === 1 ? Cesium.Color.LIME : Cesium.Color.RED,
+                        outlineColor: Cesium.Color.WHITE,
+                        outlineWidth: 1
+                    });
+                }
+
+                viewer.zoomTo(dataSource);
+            })
+            .catch(function(error) {
+                console.error("Failed to load sites:", error);
+            });
+
+        viewer.entities.add({
+            name: "Selected Location",
+            position: Cesium.Cartesian3.fromDegrees(lon, lat),
+            point: {
+                pixelSize: 16,
+                color: Cesium.Color.YELLOW,
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 2
+            },
+            label: {
+                text: "Selected Site",
+                font: "14pt sans-serif",
+                fillColor: Cesium.Color.WHITE,
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 2,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                pixelOffset: new Cesium.Cartesian2(0, -25)
+            }
+        });
+
+        // Phase 2: land-cover overlays (small images, lazy load)
+        const PUNE_RECT = Cesium.Rectangle.fromDegrees(
+            73.69994186584744, 18.39983263850651,
+            74.00015883380019, 18.600156946865162
+        );
+
+        let layer2023 = null;
+        let layer2025 = null;
+
+        async function loadLayer(file) {
+            const provider = await Cesium.SingleTileImageryProvider.fromUrl(file, {
+                rectangle: PUNE_RECT
+            });
+            const layer = viewer.imageryLayers.addImageryProvider(provider);
+            layer.alpha = 0.75;
+            layer.show = false;
+            return layer;
+        }
+
+        document.getElementById("b2023").onclick = async function() {
+            try {
+                if (!layer2023) {
+                    layer2023 = await loadLayer("label_map_2023_small.png");
+                }
+                if (layer2025) { layer2025.show = false; }
+                layer2023.show = true;
+            } catch (e) {
+                console.error("2023 overlay error:", e);
+            }
+        };
+
+        document.getElementById("b2025").onclick = async function() {
+            try {
+                if (!layer2025) {
+                    layer2025 = await loadLayer("label_map_2025_small.png");
+                }
+                if (layer2023) { layer2023.show = false; }
+                layer2025.show = true;
+            } catch (e) {
+                console.error("2025 overlay error:", e);
+            }
+        };
+
+        document.getElementById("bOff").onclick = function() {
+            if (layer2023) { layer2023.show = false; }
+            if (layer2025) { layer2025.show = false; }
+        };
+    </script>
+</body>
+</html>

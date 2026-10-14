@@ -1,0 +1,26 @@
+class_2018_id,class_2018,class_2025_id,class_2025,pixels,percent_of_total
+0,Urban,0,Urban,90742,4.87
+0,Urban,1,Vegetation,625,0.03
+0,Urban,2,Water,65,0
+0,Urban,3,Bare Land,13890,0.75
+0,Urban,4,Agriculture,11856,0.64
+1,Vegetation,0,Urban,18780,1.01
+1,Vegetation,1,Vegetation,246855,13.25
+1,Vegetation,2,Water,12,0
+1,Vegetation,3,Bare Land,16704,0.9
+1,Vegetation,4,Agriculture,452455,24.28
+2,Water,0,Urban,111,0.01
+2,Water,1,Vegetation,46,0
+2,Water,2,Water,18367,0.99
+2,Water,3,Bare Land,393,0.02
+2,Water,4,Agriculture,96,0.01
+3,Bare Land,0,Urban,35077,1.88
+3,Bare Land,1,Vegetation,1403,0.08
+3,Bare Land,2,Water,1593,0.09
+3,Bare Land,3,Bare Land,36223,1.94
+3,Bare Land,4,Agriculture,14695,0.79
+4,Agriculture,0,Urban,166921,8.96
+4,Agriculture,1,Vegetation,52219,2.8
+4,Agriculture,2,Water,144,0.01
+4,Agriculture,3,Bare Land,91794,4.93
+4,Agriculture,4,Agriculture,592099,31.78

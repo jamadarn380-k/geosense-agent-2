@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <style>
+        html, body, #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+
+    <script>
+        Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImxZTlFUWEZESU92Y0QwNFUiLCJqdGkiOiI0ZmNkNTMyNi0wNDc4LTRiZTUtOTc0Mi04Yzc0MjdkNDcyZjEiLCJpZCI6NTIyMDEwLCJpc3MiOiJodHRwczovL2FwaS5jZXNpdW0uY29tIiwiYXVkIjoidW5kZWZpbmVkX2RlZmF1bHQiLCJpYXQiOjE3OTE4MzMxMzR9.o993mz7muOUg1xoFPuxTrrTAAQhGSXlZIDwsJZXUNlM";
+
+        const esriProvider = new Cesium.UrlTemplateImageryProvider({
+            url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            credit: "Esri, Maxar, Earthstar Geographics"
+        });
+
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+            animation: false,
+            timeline: false,
+            baseLayerPicker: false,
+            geocoder: false,
+            homeButton: false,
+            sceneModePicker: false,
+            navigationHelpButton: false,
+            fullscreenButton: false,
+            infoBox: false,
+            selectionIndicator: false,
+            baseLayer: new Cesium.ImageryLayer(esriProvider)
+        });
+
+        viewer.camera.setView({
+            destination: Cesium.Cartesian3.fromDegrees(73.8567, 18.5204, 5000)
+        });
+    </script>
+</body>
+</html>
